@@ -6,14 +6,18 @@
 #include "core/Process.h"
 #include "modules/XyzIdHostAnalyzer.h"
 #include "modules/XyzIdHostProducer.h"
+#include "modules/XyzIdPmrHostAnalyzer.h"
+#include "modules/XyzIdPmrHostProducer.h"
 #include "modules/cuda/XyzIdCudaAnalyzer.h"
+#include "modules/cuda/XyzIdCudaConverter.h"
 #include "modules/cuda/XyzIdCudaProducer.h"
 #include "modules/cuda/XyzIdCudaTranscriber.h"
-#include "modules/cuda/XyzIdCudaConverter.h"
+#include "modules/cuda/XyzIdPmrCudaTranscriber.h"
 #include "modules/hip/XyzIdHipAnalyzer.h"
+#include "modules/hip/XyzIdHipConverter.h"
 #include "modules/hip/XyzIdHipProducer.h"
 #include "modules/hip/XyzIdHipTranscriber.h"
-#include "modules/hip/XyzIdHipConverter.h"
+#include "modules/hip/XyzIdPmrHipTranscriber.h"
 
 int main(void) {
   Process process;
@@ -100,6 +104,48 @@ int main(void) {
     Configuration config;
     config["source"] = std::string{"hipConverter"};
     registerModule<XyzIdHostAnalyzer>(process, "hostAnalyzerFromHip", config);
+  }
+
+  // XyzIdPmrHostProducer
+  {
+    Configuration config;
+    config["size"] = uint32_t{42};
+    registerModule<XyzIdPmrHostProducer>(process, "pmrHostProducer", config);
+  }
+
+  // XyzIdPmrHostAnalyzer
+  {
+    Configuration config;
+    config["source"] = std::string{"pmrHostProducer"};
+    registerModule<XyzIdPmrHostAnalyzer>(process, "pmrHostAnalyzer", config);
+  }
+
+  // XyzIdPmrCudaTranscriber
+  {
+    Configuration config;
+    config["source"] = std::string{"cudaProducer"};
+    registerModule<XyzIdPmrCudaTranscriber>(process, "pmrCudaTranscriber", config);
+  }
+
+  // XyzIdPmrHostAnalyzer for CUDA-based collections
+  {
+    Configuration config;
+    config["source"] = std::string{"pmrCudaTranscriber"};
+    registerModule<XyzIdPmrHostAnalyzer>(process, "pmrHostAnalyzerFromCuda", config);
+  }
+
+  // XyzIdPmrHipTranscriber
+  {
+    Configuration config;
+    config["source"] = std::string{"hipProducer"};
+    registerModule<XyzIdPmrHipTranscriber>(process, "pmrHipTranscriber", config);
+  }
+
+  // XyzIdPmrHostAnalyzer for HIP-based collections
+  {
+    Configuration config;
+    config["source"] = std::string{"pmrHipTranscriber"};
+    registerModule<XyzIdPmrHostAnalyzer>(process, "pmrHostAnalyzerFromHip", config);
   }
 
   process.run();
