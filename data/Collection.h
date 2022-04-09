@@ -13,9 +13,13 @@ public:
     assert(reinterpret_cast<uintptr_t>(buffer_) % T::alignment == 0);
   }
 
+  ~Collection() { Allocator::deallocate(buffer_); }
+
+  // non-copyable
   Collection(Collection const &) = delete;
   Collection &operator=(Collection const &) = delete;
 
+  // movable
   Collection(Collection &&other) : buffer_{other.buffer_}, layout_{std::move(other.layout_)} {
     other.buffer_ = nullptr;
   }
@@ -26,8 +30,6 @@ public:
     other.buffer_ = nullptr;
     return *this;
   }
-
-  ~Collection() { Allocator::deallocate(buffer_); }
 
   T &operator*() { return layout_; }
 

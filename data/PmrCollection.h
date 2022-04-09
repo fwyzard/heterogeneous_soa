@@ -18,7 +18,26 @@ public:
     assert(reinterpret_cast<uintptr_t>(buffer_) % T::alignment == 0);
   }
 
-  ~PmrCollection() { deallocate_(buffer_); }
+  ~PmrCollection() { if (buffer_ and deallocate_) deallocate_(buffer_); }
+
+  // non-copyable
+  PmrCollection(PmrCollection const &) = delete;
+  PmrCollection &operator=(PmrCollection const &) = delete;
+
+  // movable
+  PmrCollection(PmrCollection &&other) : buffer_{other.buffer_}, layout_{std::move(other.layout_)}, deallocate_{std::move(other.deallocate_)} {
+    other.buffer_ = nullptr;
+    other.deallocate_ = std::function<void(void *)>{};
+  }
+
+  PmrCollection &operator=(PmrCollection &&other) {
+    layout_ = std::move(other.layout_);
+    buffer_ = other.buffer_;
+    deallocate_ = std::move(other.deallocate_);
+    other.buffer_ = nullptr;
+    other.deallocate_ = std::function<void(void *)>{};
+    return *this;
+  }
 
   T &operator*() { return layout_; }
 
