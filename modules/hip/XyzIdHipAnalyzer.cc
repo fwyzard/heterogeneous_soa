@@ -22,7 +22,7 @@ public:
       //std::cout << source_ << "[" << i << "] = " << product->id(i) << std ::endl;
       assert(product->id(i) == static_cast<int32_t>(i));
     }
-    std::cout << source_ << ".size() = " << product->size() << std ::endl;
+    std::cout << "XyzIdHipAnalyzer::\n" << source_ << ".size() = " << product->size() << '\n' << std ::endl;
   }
 
 private:
