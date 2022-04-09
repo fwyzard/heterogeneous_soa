@@ -1,4 +1,4 @@
-#include <any>
+#include <cassert>
 #include <string>
 #include <unordered_map>
 
@@ -17,7 +17,7 @@ public:
     XyzIdHipDeviceCollection const &source = data.get<XyzIdHipDeviceCollection>(source_);
 
     XyzIdHipHostCollection product{source->size()};
-    hipMemcpy(product->data(), source->data(), source->extent(), hipMemcpyDeviceToHost);
+    assert(hipSuccess == hipMemcpy(product->data(), source->data(), source->extent(), hipMemcpyDeviceToHost));
 
     data.put(label(), std::move(product));
   }

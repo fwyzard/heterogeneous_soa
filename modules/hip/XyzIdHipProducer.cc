@@ -1,4 +1,4 @@
-#include <any>
+#include <cassert>
 #include <string>
 #include <unordered_map>
 
@@ -17,7 +17,7 @@ public:
     XyzIdHipDeviceCollection product{size_};
     for (size_t i = 0; i < size_; ++i) {
       int32_t value = static_cast<int32_t>(i);
-      hipMemcpy(&product->id(i), &value, sizeof(int32_t), hipMemcpyHostToDevice);
+      assert(hipSuccess == hipMemcpy(&product->id(i), &value, sizeof(int32_t), hipMemcpyHostToDevice));
     }
     data.put(label(), std::move(product));
   }

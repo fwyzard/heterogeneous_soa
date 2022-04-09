@@ -1,4 +1,4 @@
-#include <any>
+#include <cassert>
 #include <string>
 #include <unordered_map>
 
@@ -17,7 +17,7 @@ public:
     XyzIdCudaDeviceCollection const &source = data.get<XyzIdCudaDeviceCollection>(source_);
 
     XyzIdCudaHostCollection product{source->size()};
-    cudaMemcpy(product->data(), source->data(), source->extent(), cudaMemcpyDeviceToHost);
+    assert(cudaSuccess == cudaMemcpy(product->data(), source->data(), source->extent(), cudaMemcpyDeviceToHost));
 
     data.put(label(), std::move(product));
   }

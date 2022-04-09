@@ -16,7 +16,7 @@ public:
 
   void analyze(Data const &data) override {
     XyzIdHipHostCollection const &product = data.get<XyzIdHipHostCollection>(source_);
-    hipDeviceSynchronize();
+    assert(hipSuccess == hipDeviceSynchronize());
 
     for (size_t i = 0; i < product->size(); ++i) {
       //std::cout << source_ << "[" << i << "] = " << product->id(i) << std ::endl;
