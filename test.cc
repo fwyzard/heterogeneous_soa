@@ -9,6 +9,9 @@
 #include "modules/cuda/XyzIdCudaAnalyzer.h"
 #include "modules/cuda/XyzIdCudaProducer.h"
 #include "modules/cuda/XyzIdCudaTranscriber.h"
+#include "modules/hip/XyzIdHipAnalyzer.h"
+#include "modules/hip/XyzIdHipProducer.h"
+#include "modules/hip/XyzIdHipTranscriber.h"
 
 int main(void) {
   Process process;
@@ -46,6 +49,27 @@ int main(void) {
     Configuration config;
     config["source"] = std::string{"cudaTranscriber"};
     registerModule<XyzIdCudaAnalyzer>(process, "cudaAnalyzer", config);
+  }
+
+  // XyzIdHipProducer
+  {
+    Configuration config;
+    config["size"] = uint32_t{42};
+    registerModule<XyzIdHipProducer>(process, "hipProducer", config);
+  }
+
+  // XyzIdHipTranscriber
+  {
+    Configuration config;
+    config["source"] = std::string{"hipProducer"};
+    registerModule<XyzIdHipTranscriber>(process, "hipTranscriber", config);
+  }
+
+  // XyzIdHipAnalyzer
+  {
+    Configuration config;
+    config["source"] = std::string{"hipTranscriber"};
+    registerModule<XyzIdHipAnalyzer>(process, "hipAnalyzer", config);
   }
 
   process.run();
