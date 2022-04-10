@@ -3,8 +3,8 @@
 #include "data/hip/HipCollection.h"
 #include "xyzid/XyzIdSoA.h"
 
-// SoA with x, y, z, id fields in CUDA pinned host memory
+// SoA with x, y, z, id fields in HIP pinned host memory
 using XyzIdHipHostCollection = HipHostCollection<XyzIdSoA>;
 
-// SoA with x, y, z, id fields in CUDA device global memory
+// SoA with x, y, z, id fields in HIP device global memory
 using XyzIdHipDeviceCollection = HipDeviceCollection<XyzIdSoA>;
