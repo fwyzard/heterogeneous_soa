@@ -44,24 +44,18 @@ public:
 #endif
 
   // non-copyable
-  XyzIdSoA(XyzIdSoA const&) = delete;
-  XyzIdSoA& operator=(XyzIdSoA const&) = delete;
+  XyzIdSoA(XyzIdSoA const &) = delete;
+  XyzIdSoA &operator=(XyzIdSoA const &) = delete;
 
   // movable
 #ifdef DEBUG_SOA_CTOR_DTOR
-  XyzIdSoA(XyzIdSoA && other) :
-    size_(other.size_),
-    buffer_(other.buffer_),
-    x_(other.x_),
-    y_(other.y_),
-    z_(other.z_),
-    id_(other.id_)
-  {
+  XyzIdSoA(XyzIdSoA &&other)
+      : size_(other.size_), buffer_(other.buffer_), x_(other.x_), y_(other.y_), z_(other.z_), id_(other.id_) {
     std::cout << "XyzIdSoA move constructor with " << size_ << " elements at 0x" << buffer_ << std::endl;
     other.buffer_ = nullptr;
   }
 
-  XyzIdSoA& operator=(XyzIdSoA && other) {
+  XyzIdSoA &operator=(XyzIdSoA &&other) {
     size_ = other.size_;
     buffer_ = other.buffer_;
     x_ = other.x_;
@@ -73,8 +67,8 @@ public:
     return *this;
   }
 #else
-  XyzIdSoA(XyzIdSoA && other) = default;
-  XyzIdSoA& operator=(XyzIdSoA && other) = default;
+  XyzIdSoA(XyzIdSoA &&other) = default;
+  XyzIdSoA &operator=(XyzIdSoA &&other) = default;
 #endif
 
   // global accessors
@@ -88,7 +82,7 @@ public:
   // element-wise accessors are not implemented for simplicity
 
   // field-wise accessors
-  double const& x(size_t i) const {
+  double const &x(size_t i) const {
     assert(i < size_);
     return x_[i];
   }
@@ -98,7 +92,7 @@ public:
     return x_[i];
   }
 
-  double const& y(size_t i) const {
+  double const &y(size_t i) const {
     assert(i < size_);
     return y_[i];
   }
@@ -108,7 +102,7 @@ public:
     return y_[i];
   }
 
-  double const& z(size_t i) const {
+  double const &z(size_t i) const {
     assert(i < size_);
     return z_[i];
   }
@@ -118,7 +112,7 @@ public:
     return z_[i];
   }
 
-  int32_t const& id(size_t i) const {
+  int32_t const &id(size_t i) const {
     assert(i < size_);
     return id_[i];
   }
@@ -136,7 +130,7 @@ public:
     return pad(elements * sizeof(double)) +  // x
            pad(elements * sizeof(double)) +  // y
            pad(elements * sizeof(double)) +  // z
-           elements * sizeof(int32_t);           // id - no need to pad the last field
+           elements * sizeof(int32_t);       // id - no need to pad the last field
   }
 
 private:
