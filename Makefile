@@ -1,8 +1,8 @@
-CC_SRC=$(wildcard *.cc */*.cc */*/*.cc)
+CC_SRC=$(shell find src/ -name '*.cc')
 CC_OBJ=$(CC_SRC:%=%.o)
 CC_DEP=$(SRC:%=%.d)
 
-CU_SRC=$(wildcard *.cu */*.cu */*/*.cu)
+CU_SRC=$(shell find src/ -name '*.cu')
 CU_OBJ=$(CU_SRC:%=%.o)
 CU_DEP=$(SRC:%=%.d)
 
@@ -12,7 +12,7 @@ DEP=$(CC_DEP) $(CU_DEP)
 
 CXX=g++
 
-CXXFLAGS=-std=c++17 -O2 -flto -g -Wall -fPIC -MMD -march=native -mtune=native -I. -I/usr/local/cuda/include -D__HIP_PLATFORM_AMD__ -I/opt/rocm/include -I/opt/rocm/include/hip
+CXXFLAGS=-std=c++17 -O2 -flto -g -Wall -fPIC -MMD -march=native -mtune=native -Isrc -I/usr/local/cuda/include -D__HIP_PLATFORM_AMD__ -I/opt/rocm/include -I/opt/rocm/include/hip
 
 NVCC=/usr/local/cuda/bin/nvcc
 NVCC_FLAGS=-std=c++17 -O3
