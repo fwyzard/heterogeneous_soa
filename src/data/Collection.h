@@ -1,35 +1,30 @@
 #pragma once
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 
 // generic SoA-based product
 template <typename T, typename Allocator>
 class Collection {
 public:
-  Collection() : buffer_{nullptr}, layout_{} {}
+  Collection() : buffer_{}, layout_{} {}
 
-  Collection(size_t elements) : buffer_{Allocator::allocate(T::compute_size(elements))}, layout_{elements, buffer_} {
-    assert(reinterpret_cast<uintptr_t>(buffer_) % T::alignment == 0);
+  Collection(size_t elements)
+      : buffer_{static_cast<std::byte *>(Allocator::allocate(T::compute_size(elements))), Allocator::deallocate},
+        layout_{elements, buffer_.get()} {
+    assert(reinterpret_cast<uintptr_t>(buffer_.get()) % T::alignment == 0);
   }
 
-  ~Collection() { Allocator::deallocate(buffer_); }
+  ~Collection() = default;
 
   // non-copyable
   Collection(Collection const &) = delete;
   Collection &operator=(Collection const &) = delete;
 
   // movable
-  Collection(Collection &&other) : buffer_{other.buffer_}, layout_{std::move(other.layout_)} {
-    other.buffer_ = nullptr;
-  }
-
-  Collection &operator=(Collection &&other) {
-    layout_ = std::move(other.layout_);
-    buffer_ = other.buffer_;
-    other.buffer_ = nullptr;
-    return *this;
-  }
+  Collection(Collection &&other) = default;
+  Collection &operator=(Collection &&other) = default;
 
   T &operator*() { return layout_; }
 
@@ -40,6 +35,6 @@ public:
   T const *operator->() const { return &layout_; }
 
 private:
-  void *buffer_;
+  std::unique_ptr<std::byte[], void (*)(void *)> buffer_;
   T layout_;
 };

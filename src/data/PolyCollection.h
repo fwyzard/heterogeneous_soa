@@ -1,47 +1,32 @@
 #pragma once
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
-#include <functional>
 
 // generic SoA-based product
 template <typename T>
 class PolyCollection {
 public:
-  PolyCollection() : buffer_{nullptr}, layout_{}, deallocate_{} {}
+  PolyCollection() : buffer_{}, layout_{} {}
 
+  // Note: the `allocator` parameter is not used; its only purpose is to specify the _type_ of the Allocator.
   template <typename Allocator>
-  PolyCollection(size_t elements, Allocator &&allocator)
-      : buffer_{allocator.allocate(T::compute_size(elements))},
-        layout_{elements, buffer_},
-        deallocate_{[allocator](void *ptr) { allocator.deallocate(ptr); }} {
-    assert(reinterpret_cast<uintptr_t>(buffer_) % T::alignment == 0);
+  PolyCollection(size_t elements, Allocator /* allocator */)
+      : buffer_{static_cast<std::byte *>(Allocator::allocate(T::compute_size(elements))), Allocator::deallocate},
+        layout_{elements, buffer_.get()} {
+    assert(reinterpret_cast<uintptr_t>(buffer_.get()) % T::alignment == 0);
   }
 
-  ~PolyCollection() {
-    if (buffer_ and deallocate_)
-      deallocate_(buffer_);
-  }
+  ~PolyCollection() = default;
 
   // non-copyable
   PolyCollection(PolyCollection const &) = delete;
   PolyCollection &operator=(PolyCollection const &) = delete;
 
   // movable
-  PolyCollection(PolyCollection &&other)
-      : buffer_{other.buffer_}, layout_{std::move(other.layout_)}, deallocate_{std::move(other.deallocate_)} {
-    other.buffer_ = nullptr;
-    other.deallocate_ = std::function<void(void *)>{};
-  }
-
-  PolyCollection &operator=(PolyCollection &&other) {
-    layout_ = std::move(other.layout_);
-    buffer_ = other.buffer_;
-    deallocate_ = std::move(other.deallocate_);
-    other.buffer_ = nullptr;
-    other.deallocate_ = std::function<void(void *)>{};
-    return *this;
-  }
+  PolyCollection(PolyCollection &&other) = default;
+  PolyCollection &operator=(PolyCollection &&other) = default;
 
   T &operator*() { return layout_; }
 
@@ -52,7 +37,7 @@ public:
   T const *operator->() const { return &layout_; }
 
 private:
-  void *buffer_;
+  // Note: `void (*)(void *)` could be replaced by `std::function<void(void*)>` to support a stateful allocator
+  std::unique_ptr<std::byte[], void (*)(void *)> buffer_;
   T layout_;
-  std::function<void(void *)> deallocate_;
 };
