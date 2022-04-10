@@ -2,4 +2,4 @@
 
 #include "core/Process.h"
 
-DECLARE_MODULE(XyzIdPmrHostAnalyzer);
+DECLARE_MODULE(XyzIdPolyHostAnalyzer);

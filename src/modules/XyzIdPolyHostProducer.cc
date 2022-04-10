@@ -6,16 +6,16 @@
 #include "core/Data.h"
 #include "core/Producer.h"
 #include "data/HostAllocators.h"
-#include "modules/XyzIdPmrHostProducer.h"
-#include "xyzid/XyzIdPmrCollection.h"
+#include "modules/XyzIdPolyHostProducer.h"
+#include "xyzid/XyzIdPolyCollection.h"
 
-class XyzIdPmrHostProducer : public Producer {
+class XyzIdPolyHostProducer : public Producer {
 public:
-  XyzIdPmrHostProducer(std::string const &label, Configuration const &config)
+  XyzIdPolyHostProducer(std::string const &label, Configuration const &config)
       : Producer{label, config}, size_{get<uint32_t>(config, "size")} {}
 
   void produce(Data &data) override {
-    XyzIdPmrCollection product{size_, AlignedAllocator<4096>{}};
+    XyzIdPolyCollection product{size_, AlignedAllocator<4096>{}};
     for (size_t i = 0; i < size_; ++i) {
       product->id(i) = i;
     }
@@ -27,4 +27,4 @@ private:
   const uint32_t size_;
 };
 
-DEFINE_MODULE(XyzIdPmrHostProducer);
+DEFINE_MODULE(XyzIdPolyHostProducer);

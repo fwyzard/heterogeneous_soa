@@ -6,26 +6,26 @@
 #include "core/Configuration.h"
 #include "core/Data.h"
 #include "core/Process.h"
-#include "modules/XyzIdPmrHostAnalyzer.h"
-#include "xyzid/XyzIdPmrCollection.h"
+#include "modules/XyzIdPolyHostAnalyzer.h"
+#include "xyzid/XyzIdPolyCollection.h"
 
-class XyzIdPmrHostAnalyzer : public Analyzer {
+class XyzIdPolyHostAnalyzer : public Analyzer {
 public:
-  XyzIdPmrHostAnalyzer(std::string const &label, Configuration const &config)
+  XyzIdPolyHostAnalyzer(std::string const &label, Configuration const &config)
       : Analyzer{label, config}, source_{get<std::string>(config, "source")} {}
 
   void analyze(Data const &data) override {
-    XyzIdPmrCollection const &product = data.get<XyzIdPmrCollection>(source_);
+    XyzIdPolyCollection const &product = data.get<XyzIdPolyCollection>(source_);
 
     for (size_t i = 0; i < product->size(); ++i) {
       //std::cout << source_ << "[" << i << "] = " << product->id(i) << std ::endl;
       assert(product->id(i) == static_cast<int32_t>(i));
     }
-    std::cout << "XyzIdPmrHostAnalyzer:\n" << source_ << ".size() = " << product->size() << '\n' << std ::endl;
+    std::cout << "XyzIdPolyHostAnalyzer:\n" << source_ << ".size() = " << product->size() << '\n' << std ::endl;
   }
 
 private:
   const std::string source_;
 };
 
-DEFINE_MODULE(XyzIdPmrHostAnalyzer);
+DEFINE_MODULE(XyzIdPolyHostAnalyzer);

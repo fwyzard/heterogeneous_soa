@@ -2,4 +2,4 @@
 
 #include "core/Process.h"
 
-DECLARE_MODULE(XyzIdPmrHipTranscriber);
+DECLARE_MODULE(XyzIdPolyHipTranscriber);

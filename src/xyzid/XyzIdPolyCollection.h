@@ -1,7 +1,7 @@
 #pragma once
 
-#include "data/PmrCollection.h"
+#include "data/PolyCollection.h"
 #include "xyzid/XyzIdSoA.h"
 
 // SoA with x, y, z, id fields in aligned host memory
-using XyzIdPmrCollection = PmrCollection<XyzIdSoA>;
+using XyzIdPolyCollection = PolyCollection<XyzIdSoA>;
