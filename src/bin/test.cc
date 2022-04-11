@@ -6,18 +6,9 @@
 #include "core/Process.h"
 #include "modules/XyzIdHostAnalyzer.h"
 #include "modules/XyzIdHostProducer.h"
-#include "modules/XyzIdPolyHostAnalyzer.h"
-#include "modules/XyzIdPolyHostProducer.h"
-#include "modules/cuda/XyzIdCudaAnalyzer.h"
-#include "modules/cuda/XyzIdCudaConverter.h"
-#include "modules/cuda/XyzIdCudaProducer.h"
-#include "modules/cuda/XyzIdCudaTranscriber.h"
-#include "modules/cuda/XyzIdPolyCudaTranscriber.h"
-#include "modules/hip/XyzIdHipAnalyzer.h"
-#include "modules/hip/XyzIdHipConverter.h"
-#include "modules/hip/XyzIdHipProducer.h"
-#include "modules/hip/XyzIdHipTranscriber.h"
-#include "modules/hip/XyzIdPolyHipTranscriber.h"
+#include "modules/alpaka/XyzIdAlpakaAnalyzer.h"
+#include "modules/alpaka/XyzIdAlpakaTranscriber.h"
+#include "modules/alpaka/XyzIdAlpakaProducer.h"
 
 int main(void) {
   Process process;
@@ -36,116 +27,60 @@ int main(void) {
     registerModule<XyzIdHostAnalyzer>(process, "hostAnalyzer", config);
   }
 
-  // XyzIdCudaProducer
+  // alpaka_serial_sync::XyzIdAlpakaProducer
   {
     Configuration config;
     config["size"] = uint32_t{42};
-    registerModule<XyzIdCudaProducer>(process, "cudaProducer", config);
+    registerModule<alpaka_serial_sync::XyzIdAlpakaProducer>(process, "serialAlpakaProducer", config);
   }
 
-  // XyzIdCudaTranscriber
+  // alpaka_serial_sync::XyzIdAlpakaAnalyzer
   {
     Configuration config;
-    config["source"] = std::string{"cudaProducer"};
-    registerModule<XyzIdCudaTranscriber>(process, "cudaTranscriber", config);
+    config["source"] = std::string{"serialAlpakaProducer"};
+    registerModule<alpaka_serial_sync::XyzIdAlpakaAnalyzer>(process, "serialAlpakaAnalyzer", config);
   }
 
-  // XyzIdCudaAnalyzer
-  {
-    Configuration config;
-    config["source"] = std::string{"cudaTranscriber"};
-    registerModule<XyzIdCudaAnalyzer>(process, "cudaAnalyzer", config);
-  }
-
-  // XyzIdCudaConverter
-  {
-    Configuration config;
-    config["source"] = std::string{"cudaTranscriber"};
-    registerModule<XyzIdCudaConverter>(process, "cudaConverter", config);
-  }
-
-  // XyzIdHostAnalyzer for CUDA-based collections
-  {
-    Configuration config;
-    config["source"] = std::string{"cudaConverter"};
-    registerModule<XyzIdHostAnalyzer>(process, "hostAnalyzerFromCuda", config);
-  }
-
-  // XyzIdHipProducer
+  // alpaka_cuda_async::XyzIdAlpakaProducer
   {
     Configuration config;
     config["size"] = uint32_t{42};
-    registerModule<XyzIdHipProducer>(process, "hipProducer", config);
+    registerModule<alpaka_cuda_async::XyzIdAlpakaProducer>(process, "cudaAlpakaProducer", config);
   }
 
-  // XyzIdHipTranscriber
+  // alpaka_cuda_async::XyzIdAlpakaTranscriber
   {
     Configuration config;
-    config["source"] = std::string{"hipProducer"};
-    registerModule<XyzIdHipTranscriber>(process, "hipTranscriber", config);
+    config["source"] = std::string{"cudaAlpakaProducer"};
+    registerModule<alpaka_cuda_async::XyzIdAlpakaTranscriber>(process, "cudaAlpakaTranscriber", config);
   }
 
-  // XyzIdHipAnalyzer
+  // alpaka_serial_sync::XyzIdAlpakaAnalyzer for CUDA-based collections
   {
     Configuration config;
-    config["source"] = std::string{"hipTranscriber"};
-    registerModule<XyzIdHipAnalyzer>(process, "hipAnalyzer", config);
+    config["source"] = std::string{"cudaAlpakaTranscriber"};
+    registerModule<alpaka_serial_sync::XyzIdAlpakaAnalyzer>(process, "serialAlpakaAnalyzerFromCuda", config);
   }
 
-  // XyzIdHipConverter
-  {
-    Configuration config;
-    config["source"] = std::string{"hipTranscriber"};
-    registerModule<XyzIdHipConverter>(process, "hipConverter", config);
-  }
-
-  // XyzIdHostAnalyzer for HIP-based collections
-  {
-    Configuration config;
-    config["source"] = std::string{"hipConverter"};
-    registerModule<XyzIdHostAnalyzer>(process, "hostAnalyzerFromHip", config);
-  }
-
-  // XyzIdPolyHostProducer
+  // alpaka_hip_async::XyzIdAlpakaProducer
   {
     Configuration config;
     config["size"] = uint32_t{42};
-    registerModule<XyzIdPolyHostProducer>(process, "pmrHostProducer", config);
+    registerModule<alpaka_hip_async::XyzIdAlpakaProducer>(process, "hipAlpakaProducer", config);
   }
 
-  // XyzIdPolyHostAnalyzer
+  // alpaka_hip_async::XyzIdAlpakaTranscriber
   {
     Configuration config;
-    config["source"] = std::string{"pmrHostProducer"};
-    registerModule<XyzIdPolyHostAnalyzer>(process, "pmrHostAnalyzer", config);
+    config["source"] = std::string{"hipAlpakaProducer"};
+    registerModule<alpaka_hip_async::XyzIdAlpakaTranscriber>(process, "hipAlpakaTranscriber", config);
   }
 
-  // XyzIdPolyCudaTranscriber
+  // alpaka_serial_sync::XyzIdAlpakaAnalyzer for CUDA-based collections
   {
     Configuration config;
-    config["source"] = std::string{"cudaProducer"};
-    registerModule<XyzIdPolyCudaTranscriber>(process, "pmrCudaTranscriber", config);
-  }
-
-  // XyzIdPolyHostAnalyzer for CUDA-based collections
-  {
-    Configuration config;
-    config["source"] = std::string{"pmrCudaTranscriber"};
-    registerModule<XyzIdPolyHostAnalyzer>(process, "pmrHostAnalyzerFromCuda", config);
-  }
-
-  // XyzIdPolyHipTranscriber
-  {
-    Configuration config;
-    config["source"] = std::string{"hipProducer"};
-    registerModule<XyzIdPolyHipTranscriber>(process, "pmrHipTranscriber", config);
-  }
-
-  // XyzIdPolyHostAnalyzer for HIP-based collections
-  {
-    Configuration config;
-    config["source"] = std::string{"pmrHipTranscriber"};
-    registerModule<XyzIdPolyHostAnalyzer>(process, "pmrHostAnalyzerFromHip", config);
+    config["source"] = std::string{"hipAlpakaTranscriber"};
+    registerModule<alpaka_serial_sync::XyzIdAlpakaAnalyzer>(process, "serialAlpakaAnalyzerFromHip", config);
   }
 
   process.run();
