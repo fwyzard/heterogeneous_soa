@@ -23,7 +23,7 @@ namespace ALPAKA_ACCELERATOR_NAMESPACE {
     void produce(Data &data) override {
       XyzIdAlpakaDeviceCollection const &source = data.get<XyzIdAlpakaDeviceCollection>(source_);
 
-      XyzIdAlpakaHostCollection product{source->size(), host};
+      XyzIdAlpakaHostCollection product{source->size(), host, device};
       alpaka::memcpy(queue, product.buffer(), source.buffer());
 
       // wait for any async work to complete

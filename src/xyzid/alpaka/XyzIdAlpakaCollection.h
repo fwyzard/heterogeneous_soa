@@ -1,12 +1,15 @@
 #pragma once
 
 #include "core/alpaka/config.h"
-#include "data/alpaka/AlpakaCollection.h"
+#include "data/alpaka/AlpakaDeviceCollection.h"
+#include "data/alpaka/AlpakaHostCollection.h"
 #include "xyzid/XyzIdSoA.h"
 
+/*
 // SoA with x, y, z, id fields using Alpaka
 template <typename TDev>
 using XyzIdAlpakaCollection = AlpakaCollection<XyzIdSoA, TDev>;
+*/
 
 // SoA with x, y, z, id fields in pinned host memory
 using XyzIdAlpakaHostCollection = AlpakaHostCollection<XyzIdSoA>;
